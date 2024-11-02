@@ -3,24 +3,18 @@ import java.util.Arrays;
 public class InteriorPoint {
 
     public static void main(String[] args) {
-        // Coefficients of the objective function
-        double[] C = {9, 10, 16, 0, 0, 0};
-
-        // Constraint matrix (A) and RHS (b)
+        double[] C = {1, 1}; // минимизация x + y
         double[][] A = {
-                {18, 15, 12, 1, 0, 0},
-                {6, 4, 8, 0, 1, 0},
-                {5, 3, 3, 0, 0, 1}
+                {1, 0}, // x >= 1
+                {0, 1}  // y >= 1
         };
-        double[] b = {360, 192, 180, 0, 0, 0};
+        double[] b = {0.5, 0.5}; // Ограничение, которое невозможно выполнить
+        double[] xInitial = {0, 0};
 
-        // Parameters for the Interior Point Method
+
         double eps = 1e-6;
         double alpha1 = 0.5;
         double alpha2 = 0.9;
-
-        // Initial guess for x
-        double[] xInitial = {1, 1, 1, 315, 174, 169};
 
         // Solve the problem
         Result result1 = interiorPointMethod(C, A, eps, alpha1, xInitial);
@@ -54,6 +48,11 @@ public class InteriorPoint {
             double[][] P;
             try {
                 double[][] F = multiplyMatrices(A_hat, transpose(A_hat));
+
+                if (determinant(F) == 0) {
+                    return new Result("The matrix F is singular and cannot be inverted.");
+                }
+
                 double[][] F_inv = invertMatrix(F);
                 double[][] H = multiplyMatrices(transpose(A_hat), multiplyMatrices(F_inv, A_hat));
                 P = subtractMatrices(I, H);
@@ -174,6 +173,34 @@ public class InteriorPoint {
             sum += v * v;
         }
         return Math.sqrt(sum);
+    }
+
+    private static double determinant(double[][] matrix) {
+        int n = matrix.length;
+        if (n == 1) {
+            return matrix[0][0];
+        }
+
+        if (n == 2) {
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        }
+
+        double det = 0;
+        for (int col = 0; col < n; col++) {
+            double[][] minor = new double[n - 1][n - 1];
+
+            for (int i = 1; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (j < col) {
+                        minor[i - 1][j] = matrix[i][j];
+                    } else if (j > col) {
+                        minor[i - 1][j - 1] = matrix[i][j];
+                    }
+                }
+            }
+            det += Math.pow(-1, col) * matrix[0][col] * determinant(minor);
+        }
+        return det;
     }
 
     private static double[][] invertMatrix(double[][] matrix) {
