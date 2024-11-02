@@ -1,15 +1,18 @@
+import java.util.Arrays;
+
 public class InteriorPoint {
 
     public static void main(String[] args) {
         // Coefficients of the objective function
-        double[] C = {1, 1, 0, 0};
+        double[] C = {9, 10, 16, 0, 0, 0};
 
         // Constraint matrix (A) and RHS (b)
         double[][] A = {
-                {2, 4, 1, 0},
-                {1, 3, 0, -1},
+                {18, 15, 12, 1, 0, 0},
+                {6, 4, 8, 0, 1, 0},
+                {5, 3, 3, 0, 0, 1}
         };
-        double[] b = {16, 9, 0, 0, 0, 0};
+        double[] b = {360, 192, 180, 0, 0, 0};
 
         // Parameters for the Interior Point Method
         double eps = 1e-6;
@@ -17,7 +20,7 @@ public class InteriorPoint {
         double alpha2 = 0.9;
 
         // Initial guess for x
-        double[] xInitial = {0.5, 3.5, 1, 2};
+        double[] xInitial = {1, 1, 1, 315, 174, 169};
 
         // Solve the problem
         Result result1 = interiorPointMethod(C, A, eps, alpha1, xInitial);
@@ -36,6 +39,7 @@ public class InteriorPoint {
         double[][] I = identityMatrix(n);
         double[] x = xInitial.clone();
         int iteration = 0;
+        int maxIteration = 35;
 
         while (true) {
             double[] xPrev = x.clone();
@@ -82,6 +86,10 @@ public class InteriorPoint {
             x = multiplyMatrixVector(D, x_hat);
 
             iteration++;
+
+            if (iteration > maxIteration) {
+                break;
+            }
             if (euclideanNorm(subtractVectors(x, xPrev)) < eps) {
                 break;
             }
