@@ -13,16 +13,22 @@ public class InteriorPoint {
 
         // Parameters for the Interior Point Method
         double eps = 1e-6;
-        double alpha = 0.5;
+        double alpha1 = 0.5;
+        double alpha2 = 0.9;
 
         // Initial guess for x
         double[] xInitial = {0.5, 3.5, 1, 2};
 
         // Solve the problem
-        Result result = interiorPointMethod(C, A, eps, alpha, xInitial);
+        Result result1 = interiorPointMethod(C, A, eps, alpha1, xInitial);
+        Result result2 = interiorPointMethod(C, A, eps, alpha2, xInitial);
 
         // Print the result
-        System.out.println(result);
+        System.out.println("Solution with alpha = 0,5:");
+        System.out.println(result1);
+        System.out.println();
+        System.out.println("Solution with alpha = 0,9:");
+        System.out.println(result2);
     }
 
     public static Result interiorPointMethod(double[] C, double[][] A, double eps, double alpha, double[] xInitial) {
