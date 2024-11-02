@@ -3,12 +3,12 @@ import java.util.Arrays;
 public class InteriorPoint {
 
     public static void main(String[] args) {
-        double[] C = {1, 1}; // минимизация x + y
+        double[] C = {1, 1};
         double[][] A = {
-                {1, 0}, // x >= 1
-                {0, 1}  // y >= 1
+                {1, 0},
+                {0, 1}
         };
-        double[] b = {0.5, 0.5}; // Ограничение, которое невозможно выполнить
+        double[] b = {0.5, 0.5};
         double[] xInitial = {0, 0};
 
 
@@ -35,6 +35,16 @@ public class InteriorPoint {
         int iteration = 0;
         int maxIteration = 35;
 
+        for (int i = 0; i < A.length; i++) {
+            double sum = 0;
+            for (int j = 0; j < n; j++) {
+                sum += A[i][j] * xInitial[j];
+            }
+            if (sum < 0) {
+                return new Result("The problem does not have a solution!");
+            }
+        }
+
         while (true) {
             double[] xPrev = x.clone();
             double[][] D = new double[n][n];
@@ -48,11 +58,6 @@ public class InteriorPoint {
             double[][] P;
             try {
                 double[][] F = multiplyMatrices(A_hat, transpose(A_hat));
-
-                if (determinant(F) == 0) {
-                    return new Result("The matrix F is singular and cannot be inverted.");
-                }
-
                 double[][] F_inv = invertMatrix(F);
                 double[][] H = multiplyMatrices(transpose(A_hat), multiplyMatrices(F_inv, A_hat));
                 P = subtractMatrices(I, H);
